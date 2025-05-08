@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  linuxmint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linuxmint-dev
+    volumes:
+      - ./:/home/developer/shared
+    tty: true
+    stdin_open: true
+    command: -c "echo 'Linux Mint Development Environment' && echo 'Run ./setup_dev_environment.sh to start the setup' && /bin/bash" 
