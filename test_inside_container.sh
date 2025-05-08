@@ -1,19 +1,5 @@
 #!/bin/bash
 
-echo "=== Iniciando o teste do script de setup com Docker ==="
-
-# Construir a imagem Docker
-echo "Construindo a imagem Docker..."
-docker-compose build
-
-# Iniciar o container em segundo plano
-echo "Iniciando o container..."
-docker-compose up -d
-
-# Criar um script de teste que será executado dentro do container
-cat > test_inside_container.sh << 'EOF'
-#!/bin/bash
-
 # Modificando o script original para funcionar em ambiente de teste
 echo "Preparando o ambiente de teste..."
 
@@ -77,37 +63,3 @@ EOTESTSETUP
 
 chmod +x test_setup.sh
 ./test_setup.sh
-EOF
-
-chmod +x test_inside_container.sh
-
-# Copiar o script de teste para o container
-echo "Copiando o script de teste para o container..."
-docker cp test_inside_container.sh linuxmint-dev:/home/developer/
-
-# Executar o script de teste dentro do container
-echo "Executando o teste dentro do container..."
-docker exec -it linuxmint-dev bash -c "cd /home/developer && ./test_inside_container.sh"
-
-# Verificar o resultado
-echo "Verificando resultado do teste..."
-docker exec -it linuxmint-dev bash -c "ls -la /home/developer/.ssh/ && cat /home/developer/.zshrc && git config --global --list"
-
-# Conectar-se ao container para testes manuais
-echo "Conectando ao container para testes manuais..."
-echo "Digite 'exit' quando terminar de testar."
-docker exec -it linuxmint-dev bash
-
-# Limpar
-echo "Limpando ambiente de teste..."
-echo "Deseja desligar o container? (s/n)"
-read resposta
-if [ "$resposta" = "s" ]; then
-  docker-compose down
-  echo "Container desligado."
-else
-  echo "O container continua em execução."
-  echo "Para desligar o container mais tarde: docker-compose down"
-fi
-
-echo "=== Teste concluído! ===" 
